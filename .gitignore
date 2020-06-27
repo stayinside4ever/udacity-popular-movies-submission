@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+/app/src/main/java/com/example/popularmovies/Constants.java
+/app/src/main/res/drawable/dummy1.jpg
+/app/src/main/res/drawable/dummy2.jpg
