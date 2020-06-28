@@ -45,14 +45,15 @@ public class NetworkUtils {
         return api;
     }
 
-    public void getMoviesFromNetwork(String query) {
+    public void getPopularMoviesFromNetwork() {
         getApiInstance().getPopularMovies().enqueue(new Callback<PageResponse>() {
             @Override
             public void onResponse(Call<PageResponse> call, Response<PageResponse> response) {
-                Log.d("NetworkUtils", "RESPONSE SUCCESSFUL");
+                Log.d("NetworkUtils", "POPULAR RESPONSE SUCCESSFUL");
                 if (!response.isSuccessful()) {
                     Log.w("NetworkUtils", response.code() + " " + response.message());
                 } else {
+                    movies.clear();
                     movieResponses = response.body().getMovieResponses();
 
                     if (!movieResponses.isEmpty()) {
@@ -70,8 +71,34 @@ public class NetworkUtils {
                Log.e("NetworkUtils", "Request failed: " + t.getMessage());
             }
         });
+    }
 
+    public void getTopRatedMoviesFromNetwork() {
+        getApiInstance().getTopRatedMovies().enqueue(new Callback<PageResponse>() {
+            @Override
+            public void onResponse(Call<PageResponse> call, Response<PageResponse> response) {
+                Log.d("NetworkUtils", "TOP RATED RESPONSE SUCCESSFUL");
+                if (!response.isSuccessful()) {
+                    Log.w("NetworkUtils", response.code() + " " + response.message());
+                } else {
+                    movies.clear();
+                    movieResponses = response.body().getMovieResponses();
 
+                    if (!movieResponses.isEmpty()) {
+                        for (MovieResponse movieResponse : movieResponses) {
+                            movies.add(movieResponse.convertToMovieEntity());
+                        }
+                    }
+
+                    callback.onMoviesFetched(movies);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PageResponse> call, Throwable t) {
+                Log.e("NetworkUtils", "Request failed: " + t.getMessage());
+            }
+        });
     }
 }
 

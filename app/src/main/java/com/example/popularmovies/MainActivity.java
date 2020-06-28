@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.popularmovies.database.MovieEntity;
 import com.example.popularmovies.network.NetworkUtils;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity{
     PosterListAdapter adapter;
     RecyclerView postersRecyclerView;
     ProgressBar progressBar;
+    TabLayout tabFilters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity{
 
         postersRecyclerView = (RecyclerView) findViewById(R.id.rv_posters_list);
         progressBar = (ProgressBar) findViewById(R.id.pb_posters_list);
+        tabFilters = (TabLayout) findViewById(R.id.tab_layout_filters);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         postersRecyclerView.setLayoutManager(layoutManager);
@@ -44,8 +47,34 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        networkUtils.getMoviesFromNetwork("TODO");
-        setLoadingState(LoadingState.LOADING);
+        tabFilters.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case 0:
+                        networkUtils.getPopularMoviesFromNetwork();
+                        setLoadingState(LoadingState.LOADING); // TODO: handle failures, no connection
+                        break;
+                    case 1:
+                        networkUtils.getTopRatedMoviesFromNetwork();
+                        setLoadingState(LoadingState.LOADING); // TODO: handle failures, no connection
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        networkUtils.getPopularMoviesFromNetwork();
+        setLoadingState(LoadingState.LOADING); // TODO: handle failures, no connection
     }
 
     private void setLoadingState(LoadingState state) {

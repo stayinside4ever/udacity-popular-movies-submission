@@ -5,5 +5,5 @@ import com.example.popularmovies.database.MovieEntity;
 import java.util.List;
 
 public interface NetworkRequestDone {
-     public void onMoviesFetched(List<MovieEntity> movies);
+     void onMoviesFetched(List<MovieEntity> movies);
 }

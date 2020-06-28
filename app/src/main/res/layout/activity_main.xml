@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
+
+    <com.google.android.material.tabs.TabLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tab_layout_filters">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_item_popular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/popular_movies" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_item_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/top_movies" />
+    </com.google.android.material.tabs.TabLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_posters_list"
@@ -19,4 +38,4 @@
         android:layout_height="@dimen/progress_spinner_size"
         android:layout_gravity="center"
         android:visibility="visible" />
-</FrameLayout>
+</LinearLayout>

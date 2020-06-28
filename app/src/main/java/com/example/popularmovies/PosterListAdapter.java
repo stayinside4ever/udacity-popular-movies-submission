@@ -1,6 +1,5 @@
 package com.example.popularmovies;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,6 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterViewHolder> {
     public void update(List<MovieEntity> newData) {
         data = newData;
         notifyDataSetChanged();
-        Log.e("AAAAAA", data.get(2).getTitle());
     }
 }
 

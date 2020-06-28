@@ -10,6 +10,6 @@ public interface MoviesNetworkApi {
     @GET("movie/popular?api_key=" + AppConstants.API_KEY)
     Call<PageResponse> getPopularMovies();
 
-    @GET("movie/top_rated")
+    @GET("movie/top_rated?api_key=" + AppConstants.API_KEY)
     Call<PageResponse> getTopRatedMovies();
 }
