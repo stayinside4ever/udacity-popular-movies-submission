@@ -1,5 +1,6 @@
 package com.example.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -17,7 +18,7 @@ import java.util.List;
 
 enum LoadingState { LOADING, FINISHED }
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements PosterListAdapter.ItemClickListener {
     NetworkUtils networkUtils;
     PosterListAdapter adapter;
     RecyclerView postersRecyclerView;
@@ -29,14 +30,14 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        postersRecyclerView = (RecyclerView) findViewById(R.id.rv_posters_list);
-        progressBar = (ProgressBar) findViewById(R.id.pb_posters_list);
-        tabFilters = (TabLayout) findViewById(R.id.tab_layout_filters);
+        postersRecyclerView = findViewById(R.id.rv_posters_list);
+        progressBar = findViewById(R.id.pb_posters_list);
+        tabFilters = findViewById(R.id.tab_layout_filters);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         postersRecyclerView.setLayoutManager(layoutManager);
 
-        adapter = new PosterListAdapter(new ArrayList<MovieEntity>());
+        adapter = new PosterListAdapter(new ArrayList<MovieEntity>(), this);
         postersRecyclerView.setAdapter(adapter);
 
         networkUtils = new NetworkUtils(new NetworkRequestDone() {
@@ -63,15 +64,13 @@ public class MainActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabUnselected(TabLayout.Tab tab) { }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabReselected(TabLayout.Tab tab) { }
         });
+
+
 
         networkUtils.getPopularMoviesFromNetwork();
         setLoadingState(LoadingState.LOADING); // TODO: handle failures, no connection
@@ -90,5 +89,16 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    @Override
+    public void onItemClick(MovieEntity movie) {
+        Intent intent = new Intent(this, DetailsActivity.class);
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE_TITLE, movie.getTitle());
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE_RATING, movie.getRating());
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE_DURATION, "120min"); // TODO: get actual data
+        //TODO: release year
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE_IMAGE_URL, movie.getImageUrl());
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE_DESCRIPTION, movie.getDescription());
+        startActivity(intent);
+    }
 }
 
