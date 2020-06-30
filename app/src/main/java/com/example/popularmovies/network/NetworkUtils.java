@@ -68,7 +68,8 @@ public class NetworkUtils {
 
             @Override
             public void onFailure(Call<PageResponse> call, Throwable t) {
-               Log.e("NetworkUtils", "Request failed: " + t.getMessage());
+                Log.e("NetworkUtils", "Request failed: " + t.getMessage());
+                callback.onRequestFailed();
             }
         });
     }
@@ -97,6 +98,7 @@ public class NetworkUtils {
             @Override
             public void onFailure(Call<PageResponse> call, Throwable t) {
                 Log.e("NetworkUtils", "Request failed: " + t.getMessage());
+                callback.onRequestFailed();
             }
         });
     }

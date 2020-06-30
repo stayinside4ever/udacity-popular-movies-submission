@@ -39,6 +39,7 @@ dependencies {
 
     // room - database
     implementation "androidx.room:room-runtime:2.2.5"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     annotationProcessor "androidx.room:room-compiler:2.2.5"
 
     // retrofit - network

@@ -2,4 +2,7 @@
 <resources>
     <dimen name="recyclerview_margin">2dp</dimen>
     <dimen name="progress_spinner_size">42dp</dimen>
+    <dimen name="details_text_padding">24dp</dimen>
+    <dimen name="details_line_padding">4dp</dimen>
+    <dimen name="margin">16dp</dimen>
 </resources>

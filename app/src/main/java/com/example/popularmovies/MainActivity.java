@@ -2,9 +2,14 @@ package com.example.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
     RecyclerView postersRecyclerView;
     ProgressBar progressBar;
     TabLayout tabFilters;
+    Toast requestFailToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,34 +52,32 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
                 adapter.update(movies);
                 setLoadingState(LoadingState.FINISHED);
             }
+
+            @Override
+            public void onRequestFailed() {
+                showRequestFailToast();
+            }
         });
 
         tabFilters.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                switch (tab.getPosition()) {
-                    case 0:
-                        networkUtils.getPopularMoviesFromNetwork();
-                        setLoadingState(LoadingState.LOADING); // TODO: handle failures, no connection
-                        break;
-                    case 1:
-                        networkUtils.getTopRatedMoviesFromNetwork();
-                        setLoadingState(LoadingState.LOADING); // TODO: handle failures, no connection
-                        break;
-                }
+                makeNetworkRequest(tab.getPosition());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) { }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
+            public void onTabReselected(TabLayout.Tab tab) {
+                makeNetworkRequest(tab.getPosition());
+            }
         });
 
 
 
         networkUtils.getPopularMoviesFromNetwork();
-        setLoadingState(LoadingState.LOADING); // TODO: handle failures, no connection
+        setLoadingState(LoadingState.LOADING);
     }
 
     private void setLoadingState(LoadingState state) {
@@ -90,15 +94,56 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_about:
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onItemClick(MovieEntity movie) {
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(DetailsActivity.EXTRA_MOVIE_TITLE, movie.getTitle());
         intent.putExtra(DetailsActivity.EXTRA_MOVIE_RATING, movie.getRating());
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_DURATION, "120min"); // TODO: get actual data
-        //TODO: release year
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE_RELEASE_DATE, movie.getReleaseDate());
         intent.putExtra(DetailsActivity.EXTRA_MOVIE_IMAGE_URL, movie.getImageUrl());
         intent.putExtra(DetailsActivity.EXTRA_MOVIE_DESCRIPTION, movie.getDescription());
         startActivity(intent);
+    }
+
+    private void showRequestFailToast() {
+        if (requestFailToast != null) {
+            requestFailToast.cancel();
+        }
+
+        requestFailToast = Toast.makeText(this, R.string.loading_failed_message,
+                Toast.LENGTH_LONG);
+        requestFailToast.show();
+    }
+
+    private void makeNetworkRequest(int tabPosition) {
+        switch (tabPosition) {
+            case 0:
+                networkUtils.getPopularMoviesFromNetwork();
+                setLoadingState(LoadingState.LOADING);
+                break;
+            case 1:
+                networkUtils.getTopRatedMoviesFromNetwork();
+                setLoadingState(LoadingState.LOADING);
+                break;
+        }
     }
 }
 

@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="8dp">
+    android:layout_margin="@dimen/margin">
 
     <ImageView
         android:id="@+id/iv_details_poster"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/poster_image"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@id/tv_rating"
         app:layout_constraintDimensionRatio="W, 0.66"
@@ -22,44 +23,52 @@
         android:id="@+id/tv_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:paddingTop="@dimen/details_text_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_details_poster"
         tools:text="Lorem ipsum dolor sit amet, yada yada" />
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingBottom="4dp"
-        android:textSize="32sp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_duration"
-        app:layout_constraintStart_toEndOf="@id/iv_details_poster"
-        app:layout_constraintTop_toTopOf="@id/iv_details_poster"
+        android:layout_gravity="start"
+        android:paddingStart="@dimen/details_text_padding"
+        android:paddingBottom="@dimen/details_line_padding"
         android:text="@string/app_name"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_release_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/iv_details_poster"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread"
         tools:text="Movie Title" />
 
+
     <TextView
-        android:id="@+id/tv_duration"
+        android:id="@+id/tv_release_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingBottom="4dp"
+        android:paddingStart="@dimen/details_text_padding"
+        android:paddingBottom="@dimen/details_line_padding"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/tv_rating"
         app:layout_constraintStart_toEndOf="@+id/iv_details_poster"
         app:layout_constraintTop_toBottomOf="@+id/tv_title"
-        tools:text="120 min" />
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        tools:text="2015" />
 
     <TextView
         android:id="@+id/tv_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="24dp"
+        android:paddingStart="@dimen/details_text_padding"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/tv_description"
         app:layout_constraintStart_toEndOf="@+id/iv_details_poster"
-        app:layout_constraintTop_toBottomOf="@+id/tv_duration"
+        app:layout_constraintTop_toBottomOf="@+id/tv_release_date"
         tools:text="4.8/5.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

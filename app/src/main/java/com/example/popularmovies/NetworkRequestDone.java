@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface NetworkRequestDone {
      void onMoviesFetched(List<MovieEntity> movies);
+     void onRequestFailed();
 }
