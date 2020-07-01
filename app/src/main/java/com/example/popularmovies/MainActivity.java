@@ -1,7 +1,9 @@
 package com.example.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         progressBar = findViewById(R.id.pb_posters_list);
         tabFilters = findViewById(R.id.tab_layout_filters);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
         postersRecyclerView.setLayoutManager(layoutManager);
 
         adapter = new PosterListAdapter(new ArrayList<MovieEntity>(), this);
@@ -144,6 +146,16 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
                 setLoadingState(LoadingState.LOADING);
                 break;
         }
+    }
+
+    // Helper method to calculate the best amount of columns to be displayed on a device
+    // provided by Udacity code reviewer
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int scalingFactor = 180;
+        int noOfColumns = (int) (dpWidth / scalingFactor);
+        return noOfColumns;
     }
 }
 

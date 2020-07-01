@@ -62,7 +62,11 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Po
         }
 
         void bind (MovieEntity movie) {
-            Picasso.get().load(movie.getImageUrl()).into(posterImageView);
+            Picasso.get()
+                    .load(movie.getImageUrl())
+                    .placeholder(R.drawable.ic_baseline_image_24)
+                    .error(R.drawable.ic_baseline_broken_image_24)
+                    .into(posterImageView);
         }
 
         @Override

@@ -37,7 +37,11 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent.hasExtra(EXTRA_MOVIE_IMAGE_URL)) {
-            Picasso.get().load(intent.getStringExtra(EXTRA_MOVIE_IMAGE_URL)).into(posterImage);
+            Picasso.get()
+                    .load(intent.getStringExtra(EXTRA_MOVIE_IMAGE_URL))
+                    .placeholder(R.drawable.ic_baseline_image_24)
+                    .error(R.drawable.ic_baseline_broken_image_24)
+                    .into(posterImage);
         }
 
         if (intent.hasExtra(EXTRA_MOVIE_TITLE)) {
