@@ -2,12 +2,11 @@ package com.example.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.popularmovies.databinding.ActivityDetailsBinding;
 import com.squareup.picasso.Picasso;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -17,22 +16,14 @@ public class DetailsActivity extends AppCompatActivity {
     public static final String EXTRA_MOVIE_IMAGE_URL = "EXTRA_MOVIE_IMAGE_URL";
     public static final String EXTRA_MOVIE_RELEASE_DATE = "EXTRA_MOVIE_RELEASE_DATE";
 
-    private ImageView posterImage;
-    private TextView titleTextView;
-    private TextView ratingTextView;
-    private TextView descriptionTextView;
-    private TextView releaseDateTextView;
+    private ActivityDetailsBinding binding;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
 
-        posterImage = findViewById(R.id.iv_details_poster);
-        titleTextView = findViewById(R.id.tv_title);
-        ratingTextView = findViewById(R.id.tv_rating);
-        descriptionTextView = findViewById(R.id.tv_description);
-        releaseDateTextView = findViewById(R.id.tv_release_date);
+        binding = ActivityDetailsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         Intent intent = getIntent();
 
@@ -41,23 +32,23 @@ public class DetailsActivity extends AppCompatActivity {
                     .load(intent.getStringExtra(EXTRA_MOVIE_IMAGE_URL))
                     .placeholder(R.drawable.ic_baseline_image_24)
                     .error(R.drawable.ic_baseline_broken_image_24)
-                    .into(posterImage);
+                    .into(binding.ivDetailsPoster);
         }
 
         if (intent.hasExtra(EXTRA_MOVIE_TITLE)) {
-            titleTextView.setText(intent.getStringExtra(EXTRA_MOVIE_TITLE));
+            binding.tvTitle.setText(intent.getStringExtra(EXTRA_MOVIE_TITLE));
         }
 
         if (intent.hasExtra(EXTRA_MOVIE_RATING)) {
-            ratingTextView.setText(String.valueOf(intent.getDoubleExtra(EXTRA_MOVIE_RATING, 0.0)));
+            binding.tvRating.setText(String.valueOf(intent.getDoubleExtra(EXTRA_MOVIE_RATING, 0.0)));
         }
 
         if (intent.hasExtra(EXTRA_MOVIE_DESCRIPTION)) {
-            descriptionTextView.setText(intent.getStringExtra(EXTRA_MOVIE_DESCRIPTION));
+            binding.tvDescription.setText(intent.getStringExtra(EXTRA_MOVIE_DESCRIPTION));
         }
 
         if (intent.hasExtra(EXTRA_MOVIE_RELEASE_DATE)) {
-            releaseDateTextView.setText(intent.getStringExtra(EXTRA_MOVIE_RELEASE_DATE));
+            binding.tvReleaseDate.setText(intent.getStringExtra(EXTRA_MOVIE_RELEASE_DATE));
         }
     }
 }

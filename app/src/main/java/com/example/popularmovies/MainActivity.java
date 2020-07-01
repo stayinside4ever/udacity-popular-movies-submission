@@ -8,15 +8,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.popularmovies.database.MovieEntity;
+import com.example.popularmovies.databinding.ActivityMainBinding;
 import com.example.popularmovies.network.NetworkUtils;
 import com.google.android.material.tabs.TabLayout;
 
@@ -28,25 +27,21 @@ enum LoadingState { LOADING, FINISHED }
 public class MainActivity extends AppCompatActivity implements PosterListAdapter.ItemClickListener {
     NetworkUtils networkUtils;
     PosterListAdapter adapter;
-    RecyclerView postersRecyclerView;
-    ProgressBar progressBar;
-    TabLayout tabFilters;
     Toast requestFailToast;
+    ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        postersRecyclerView = findViewById(R.id.rv_posters_list);
-        progressBar = findViewById(R.id.pb_posters_list);
-        tabFilters = findViewById(R.id.tab_layout_filters);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
-        postersRecyclerView.setLayoutManager(layoutManager);
+        binding.rvPostersList.setLayoutManager(layoutManager);
 
         adapter = new PosterListAdapter(new ArrayList<MovieEntity>(), this);
-        postersRecyclerView.setAdapter(adapter);
+        binding.rvPostersList.setAdapter(adapter);
 
         networkUtils = new NetworkUtils(new NetworkRequestDone() {
             @Override
@@ -61,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
             }
         });
 
-        tabFilters.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        binding.tabLayoutFilters.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 makeNetworkRequest(tab.getPosition());
@@ -85,12 +80,12 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
     private void setLoadingState(LoadingState state) {
         switch (state) {
             case LOADING:
-                postersRecyclerView.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
+                binding.rvPostersList.setVisibility(View.GONE);
+                binding.pbPostersList.setVisibility(View.VISIBLE);
                 break;
             case FINISHED:
-                progressBar.setVisibility(View.GONE);
-                postersRecyclerView.setVisibility(View.VISIBLE);
+                binding.pbPostersList.setVisibility(View.GONE);
+                binding.rvPostersList.setVisibility(View.VISIBLE);
                 break;
         }
     }

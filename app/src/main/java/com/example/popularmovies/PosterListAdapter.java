@@ -3,18 +3,17 @@ package com.example.popularmovies;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.popularmovies.database.MovieEntity;
+import com.example.popularmovies.databinding.ListItemMoviePosterBinding;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.PosterViewHolder> {
-
     private List<MovieEntity> data;
     private ItemClickListener onClickListener;
 
@@ -31,10 +30,11 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Po
     @NonNull
     @Override
     public PosterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_movie_poster,
-                                                                parent, false);
-
-        return new PosterViewHolder(view);
+        LayoutInflater layoutInflater =
+                LayoutInflater.from(parent.getContext());
+        ListItemMoviePosterBinding posterBinding =
+                ListItemMoviePosterBinding.inflate(layoutInflater, parent, false);
+        return new PosterViewHolder(posterBinding);
     }
 
     @Override
@@ -53,12 +53,12 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Po
     }
 
     class PosterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView posterImageView;
+        private final ListItemMoviePosterBinding posterBinding;
 
-        public PosterViewHolder(@NonNull View itemView) {
-            super(itemView);
-            posterImageView = itemView.findViewById(R.id.iv_list_poster);
-            itemView.setOnClickListener(this);
+        public PosterViewHolder(ListItemMoviePosterBinding posterBinding) {
+            super(posterBinding.getRoot());
+            this.posterBinding = posterBinding;
+            posterBinding.getRoot().setOnClickListener(this);
         }
 
         void bind (MovieEntity movie) {
@@ -66,7 +66,7 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Po
                     .load(movie.getImageUrl())
                     .placeholder(R.drawable.ic_baseline_image_24)
                     .error(R.drawable.ic_baseline_broken_image_24)
-                    .into(posterImageView);
+                    .into(posterBinding.ivListPoster);
         }
 
         @Override
