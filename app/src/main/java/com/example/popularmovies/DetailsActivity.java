@@ -2,6 +2,7 @@ package com.example.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.pbDetailsLoading.setVisibility(View.VISIBLE); // TODO: loading stuff
+        binding.detailsContainer.setVisibility(View.GONE);
 
         Intent intent = getIntent();
 
@@ -50,5 +54,8 @@ public class DetailsActivity extends AppCompatActivity {
         if (intent.hasExtra(EXTRA_MOVIE_RELEASE_DATE)) {
             binding.tvReleaseDate.setText(intent.getStringExtra(EXTRA_MOVIE_RELEASE_DATE));
         }
+
+        binding.pbDetailsLoading.setVisibility(View.GONE); // TODO: stop loading stuff
+        binding.detailsContainer.setVisibility(View.VISIBLE);
     }
 }

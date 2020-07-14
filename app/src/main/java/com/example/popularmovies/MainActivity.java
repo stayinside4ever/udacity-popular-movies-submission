@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
             }
         });
 
+        // TODO: save and load selected tab for rotation purposes
+
 
         networkUtils.getPopularMoviesFromNetwork();
         setLoadingState(LoadingState.LOADING);
