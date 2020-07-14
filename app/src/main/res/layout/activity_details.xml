@@ -16,10 +16,10 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/poster_image"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@id/tv_rating"
+            app:layout_constraintBottom_toBottomOf="@id/btn_favourite"
             app:layout_constraintDimensionRatio="W, 0.66"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_title"
             app:layout_constraintVertical_bias="0.0"
             tools:src="@tools:sample/avatars" />
 
@@ -27,10 +27,10 @@
             android:id="@+id/tv_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/details_text_padding"
+            android:layout_marginTop="@dimen/details_text_padding"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_details_poster"
+            app:layout_constraintTop_toBottomOf="@id/btn_favourite"
             tools:text="Lorem ipsum dolor sit amet, yada yada" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:paddingStart="@dimen/details_text_padding"
+            android:layout_marginStart="@dimen/details_text_padding"
             android:paddingBottom="@dimen/details_line_padding"
             android:text="@string/app_name"
             android:textSize="32sp"
@@ -55,11 +55,10 @@
             android:id="@+id/tv_release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/details_text_padding"
             android:paddingBottom="@dimen/details_line_padding"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/tv_rating"
-            app:layout_constraintStart_toEndOf="@+id/iv_details_poster"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
             app:layout_constraintTop_toBottomOf="@+id/tv_title"
             app:layout_constraintVertical_chainStyle="spread_inside"
             tools:text="2015" />
@@ -68,12 +67,70 @@
             android:id="@+id/tv_rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/details_text_padding"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_description"
-            app:layout_constraintStart_toEndOf="@+id/iv_details_poster"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            app:layout_constraintBottom_toTopOf="@id/btn_favourite"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
             app:layout_constraintTop_toBottomOf="@+id/tv_release_date"
             tools:text="4.8/5.0" />
+
+        <Button
+            android:id="@+id/btn_favourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_favourites"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_rating"
+            app:layout_constraintBottom_toBottomOf="@id/iv_details_poster"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ll_trailers_container"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_description">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trailers"
+                android:textSize="16sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_trailers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ll_reviews_container"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_trailers_container"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reviews"
+                android:textSize="16sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!--favourite button-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

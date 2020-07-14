@@ -7,4 +7,7 @@
     <string name="about">About</string>
     <string name="about_notice">This is a learning app for the Udacity Android Nanodegree project Popular Movies, Stage 1.\n\nThis application uses the TMDb API but is not endorsed or certified by TMDb.</string>
     <string name="favourites">Favourites</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
+    <string name="add_to_favourites">Add to Favourites</string>
 </resources>
