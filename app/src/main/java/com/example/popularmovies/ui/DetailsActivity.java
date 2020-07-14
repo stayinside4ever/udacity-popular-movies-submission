@@ -7,8 +7,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.popularmovies.R;
+import com.example.popularmovies.adapters.ReviewsListAdapter;
 import com.example.popularmovies.databinding.ActivityDetailsBinding;
 import com.example.popularmovies.network.DetailsNetworkRequestDone;
 import com.example.popularmovies.network.NetworkUtils;
@@ -75,10 +77,13 @@ public class DetailsActivity extends AppCompatActivity {
         networkUtils = new NetworkUtils(new DetailsNetworkRequestDone() {
             @Override
             public void onReviewsFetched(List<ReviewsResponse> reviewsResponses) {
-                // TODO: load reviews into recyclerview, make another one for trailers
+                binding.rvReviews.setLayoutManager(new LinearLayoutManager(getParent()));
+                binding.rvReviews.setAdapter(new ReviewsListAdapter(reviewsResponses));
                 binding.pbDetailsLoading.setVisibility(View.GONE);
                 binding.detailsContainer.setVisibility(View.VISIBLE);
             }
+
+            //TODO: Make another for trailers
 
             @Override
             public void onRequestFailed() {
