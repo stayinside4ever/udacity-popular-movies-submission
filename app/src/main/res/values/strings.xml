@@ -6,4 +6,5 @@
     <string name="loading_failed_message">Loading movies failed. Are you sure you\'re connected to the Internet? Try again by selecting/re-selecting a tab.</string>
     <string name="about">About</string>
     <string name="about_notice">This is a learning app for the Udacity Android Nanodegree project Popular Movies, Stage 1.\n\nThis application uses the TMDb API but is not endorsed or certified by TMDb.</string>
+    <string name="favourites">Favourites</string>
 </resources>

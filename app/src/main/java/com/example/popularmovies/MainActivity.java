@@ -22,7 +22,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-enum LoadingState { LOADING, FINISHED }
+enum LoadingState {LOADING, FINISHED}
 
 public class MainActivity extends AppCompatActivity implements PosterListAdapter.ItemClickListener {
     NetworkUtils networkUtils;
@@ -59,18 +59,18 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         binding.tabLayoutFilters.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                makeNetworkRequest(tab.getPosition());
+                makeRepositoryRequest(tab.getPosition());
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                makeNetworkRequest(tab.getPosition());
+                makeRepositoryRequest(tab.getPosition());
             }
         });
-
 
 
         networkUtils.getPopularMoviesFromNetwork();
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         requestFailToast.show();
     }
 
-    private void makeNetworkRequest(int tabPosition) {
+    private void makeRepositoryRequest(int tabPosition) {
         switch (tabPosition) {
             case 0:
                 networkUtils.getPopularMoviesFromNetwork();
@@ -140,6 +140,11 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
                 networkUtils.getTopRatedMoviesFromNetwork();
                 setLoadingState(LoadingState.LOADING);
                 break;
+            case 2:
+                List<MovieEntity> favourites = new ArrayList<>(); // TODO: fetch actual movies from db
+                setLoadingState(LoadingState.LOADING);
+                adapter.update(favourites);
+                setLoadingState(LoadingState.FINISHED);
         }
     }
 
@@ -149,8 +154,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         int scalingFactor = 180;
-        int noOfColumns = (int) (dpWidth / scalingFactor);
-        return noOfColumns;
+        return (int) (dpWidth / scalingFactor);
     }
 }
 
