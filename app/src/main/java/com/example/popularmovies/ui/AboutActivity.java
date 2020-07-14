@@ -1,8 +1,10 @@
-package com.example.popularmovies;
+package com.example.popularmovies.ui;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.popularmovies.R;
 
 public class AboutActivity extends AppCompatActivity {
 

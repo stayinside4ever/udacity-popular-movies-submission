@@ -1,4 +1,4 @@
-package com.example.popularmovies;
+package com.example.popularmovies.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,8 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.example.popularmovies.R;
+import com.example.popularmovies.adapters.PosterListAdapter;
 import com.example.popularmovies.database.MovieEntity;
 import com.example.popularmovies.databinding.ActivityMainBinding;
+import com.example.popularmovies.network.MovieNetworkRequestDone;
 import com.example.popularmovies.network.NetworkUtils;
 import com.google.android.material.tabs.TabLayout;
 
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         adapter = new PosterListAdapter(new ArrayList<MovieEntity>(), this);
         binding.rvPostersList.setAdapter(adapter);
 
-        networkUtils = new NetworkUtils(new NetworkRequestDone() {
+        networkUtils = new NetworkUtils(new MovieNetworkRequestDone() {
             @Override
             public void onMoviesFetched(List<MovieEntity> movies) {
                 adapter.update(movies);
@@ -119,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         intent.putExtra(DetailsActivity.EXTRA_MOVIE_RELEASE_DATE, movie.getReleaseDate());
         intent.putExtra(DetailsActivity.EXTRA_MOVIE_IMAGE_URL, movie.getImageUrl());
         intent.putExtra(DetailsActivity.EXTRA_MOVIE_DESCRIPTION, movie.getDescription());
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE_ID, movie.getMovieId());
         startActivity(intent);
     }
 
@@ -127,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
             requestFailToast.cancel();
         }
 
-        requestFailToast = Toast.makeText(this, R.string.loading_failed_message,
+        requestFailToast = Toast.makeText(this, R.string.loading_movies_failed_message,
                 Toast.LENGTH_LONG);
         requestFailToast.show();
     }

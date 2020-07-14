@@ -1,4 +1,4 @@
-package com.example.popularmovies.network;
+package com.example.popularmovies.network.models;
 
 import com.example.popularmovies.AppConstants;
 import com.example.popularmovies.database.MovieEntity;

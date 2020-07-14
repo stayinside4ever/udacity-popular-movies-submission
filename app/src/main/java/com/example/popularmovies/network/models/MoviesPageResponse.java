@@ -1,10 +1,10 @@
-package com.example.popularmovies.network;
+package com.example.popularmovies.network.models;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class PageResponse {
+public class MoviesPageResponse {
 
     @SerializedName("results")
     private List<MovieResponse> movieResponses;

@@ -1,10 +1,10 @@
-package com.example.popularmovies;
+package com.example.popularmovies.network;
 
 import com.example.popularmovies.database.MovieEntity;
 
 import java.util.List;
 
-public interface NetworkRequestDone {
+public interface MovieNetworkRequestDone {
      void onMoviesFetched(List<MovieEntity> movies);
      void onRequestFailed();
 }

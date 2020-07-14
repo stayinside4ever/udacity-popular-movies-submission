@@ -1,4 +1,4 @@
-package com.example.popularmovies;
+package com.example.popularmovies.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.popularmovies.R;
 import com.example.popularmovies.database.MovieEntity;
 import com.example.popularmovies.databinding.ListItemMoviePosterBinding;
 import com.squareup.picasso.Picasso;
@@ -23,7 +24,7 @@ public class PosterListAdapter extends RecyclerView.Adapter<PosterListAdapter.Po
     }
 
 
-    interface ItemClickListener {
+    public interface ItemClickListener {
         void onItemClick(MovieEntity movie);
     }
 
