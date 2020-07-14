@@ -1,5 +1,6 @@
-package com.example.popularmovies.network.models;
+package com.example.popularmovies.network.models.page;
 
+import com.example.popularmovies.network.models.MovieResponse;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

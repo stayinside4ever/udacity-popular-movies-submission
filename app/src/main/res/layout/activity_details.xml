@@ -9,8 +9,8 @@
         android:id="@+id/pb_details_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/details_container"
@@ -115,7 +115,8 @@
                     android:id="@+id/rv_trailers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="8dp"
+                    android:paddingBottom="16dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -140,7 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:paddingBottom="16dp"/>
+                    android:paddingBottom="16dp" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

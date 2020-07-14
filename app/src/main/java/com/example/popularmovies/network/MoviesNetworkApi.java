@@ -1,8 +1,9 @@
 package com.example.popularmovies.network;
 
 import com.example.popularmovies.AppConstants;
-import com.example.popularmovies.network.models.MoviesPageResponse;
-import com.example.popularmovies.network.models.ReviewsPageResponse;
+import com.example.popularmovies.network.models.page.MoviesPageResponse;
+import com.example.popularmovies.network.models.page.ReviewsPageResponse;
+import com.example.popularmovies.network.models.page.TrailersPageResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -19,6 +20,6 @@ public interface MoviesNetworkApi {
     @GET("movie/{id}/reviews?api_key=" + AppConstants.API_KEY)
     Call<ReviewsPageResponse> getMovieReviews(@Path("id") int id);
 
-    @GET("movie/{id}/trailers")
-    Call<MoviesPageResponse> getMovieTrailers(@Path("id") int id);
+    @GET("movie/{id}/videos?api_key=" + AppConstants.API_KEY)
+    Call<TrailersPageResponse> getMovieTrailers(@Path("id") int id);
 }

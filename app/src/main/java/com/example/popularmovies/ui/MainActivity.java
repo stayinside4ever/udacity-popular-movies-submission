@@ -18,7 +18,7 @@ import com.example.popularmovies.R;
 import com.example.popularmovies.adapters.PosterListAdapter;
 import com.example.popularmovies.database.MovieEntity;
 import com.example.popularmovies.databinding.ActivityMainBinding;
-import com.example.popularmovies.network.MovieNetworkRequestDone;
+import com.example.popularmovies.network.callbacks.MovieNetworkRequestDone;
 import com.example.popularmovies.network.NetworkUtils;
 import com.google.android.material.tabs.TabLayout;
 

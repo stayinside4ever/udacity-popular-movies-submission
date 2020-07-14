@@ -1,4 +1,4 @@
-package com.example.popularmovies.network;
+package com.example.popularmovies.network.callbacks;
 
 import com.example.popularmovies.database.MovieEntity;
 

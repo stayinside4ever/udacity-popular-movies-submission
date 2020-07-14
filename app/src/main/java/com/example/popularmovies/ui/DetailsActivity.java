@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.popularmovies.R;
 import com.example.popularmovies.adapters.ReviewsListAdapter;
+import com.example.popularmovies.adapters.TrailersListAdapter;
 import com.example.popularmovies.databinding.ActivityDetailsBinding;
-import com.example.popularmovies.network.DetailsNetworkRequestDone;
+import com.example.popularmovies.network.callbacks.DetailsNetworkRequestDone;
 import com.example.popularmovies.network.NetworkUtils;
 import com.example.popularmovies.network.models.ReviewsResponse;
+import com.example.popularmovies.network.models.TrailersResponse;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -33,6 +35,8 @@ public class DetailsActivity extends AppCompatActivity {
     Toast requestFailToast;
 
     private int movieId;
+    private boolean reviewsLoaded = false;
+    private boolean trailersLoaded = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +45,7 @@ public class DetailsActivity extends AppCompatActivity {
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.pbDetailsLoading.setVisibility(View.VISIBLE); // TODO: loading stuff
+        binding.pbDetailsLoading.setVisibility(View.VISIBLE);
         binding.detailsContainer.setVisibility(View.GONE);
 
         Intent intent = getIntent();
@@ -77,13 +81,29 @@ public class DetailsActivity extends AppCompatActivity {
         networkUtils = new NetworkUtils(new DetailsNetworkRequestDone() {
             @Override
             public void onReviewsFetched(List<ReviewsResponse> reviewsResponses) {
-                binding.rvReviews.setLayoutManager(new LinearLayoutManager(getParent()));
-                binding.rvReviews.setAdapter(new ReviewsListAdapter(reviewsResponses));
-                binding.pbDetailsLoading.setVisibility(View.GONE);
-                binding.detailsContainer.setVisibility(View.VISIBLE);
+                if (reviewsResponses != null) {
+                    binding.rvReviews.setLayoutManager(new LinearLayoutManager(getParent()));
+                    binding.rvReviews.setAdapter(new ReviewsListAdapter(reviewsResponses));
+                } else {
+                    binding.llReviewsContainer.setVisibility(View.GONE);
+                }
+
+                reviewsLoaded = true;
+                checkForDoneLoading();
             }
 
-            //TODO: Make another for trailers
+            @Override
+            public void onTrailersFetched(List<TrailersResponse> trailersResponses) {
+                if(trailersResponses != null) {
+                    binding.rvTrailers.setLayoutManager(new LinearLayoutManager(getParent()));
+                    binding.rvTrailers.setAdapter(new TrailersListAdapter(trailersResponses));
+                } else {
+                    binding.llTrailersContainer.setVisibility(View.GONE);
+                }
+
+                trailersLoaded = true;
+                checkForDoneLoading();
+            }
 
             @Override
             public void onRequestFailed() {
@@ -92,6 +112,7 @@ public class DetailsActivity extends AppCompatActivity {
         });
 
         networkUtils.getReviewsFromNetwork(movieId);
+        networkUtils.getTrailersFromNetwork(movieId);
     }
 
     private void makeRequestFailedToast() {
@@ -102,5 +123,12 @@ public class DetailsActivity extends AppCompatActivity {
         requestFailToast = Toast.makeText(this, R.string.loading_details_failed_message,
                 Toast.LENGTH_LONG);
         requestFailToast.show();
+    }
+
+    private void checkForDoneLoading() {
+        if (reviewsLoaded && trailersLoaded) {
+            binding.pbDetailsLoading.setVisibility(View.GONE);
+            binding.detailsContainer.setVisibility(View.VISIBLE);
+        }
     }
 }
