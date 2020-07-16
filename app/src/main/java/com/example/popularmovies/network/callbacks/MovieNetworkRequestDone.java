@@ -1,6 +1,6 @@
 package com.example.popularmovies.network.callbacks;
 
-import com.example.popularmovies.database.MovieEntity;
+import com.example.popularmovies.database.models.MovieEntity;
 
 import java.util.List;
 

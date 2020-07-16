@@ -12,14 +12,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.popularmovies.R;
 import com.example.popularmovies.adapters.PosterListAdapter;
-import com.example.popularmovies.database.MovieEntity;
+import com.example.popularmovies.database.AppDatabase;
+import com.example.popularmovies.database.models.MovieEntity;
 import com.example.popularmovies.databinding.ActivityMainBinding;
-import com.example.popularmovies.network.callbacks.MovieNetworkRequestDone;
 import com.example.popularmovies.network.NetworkUtils;
+import com.example.popularmovies.network.callbacks.MovieNetworkRequestDone;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -32,10 +35,13 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
     PosterListAdapter adapter;
     Toast requestFailToast;
     ActivityMainBinding binding;
+    AppDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        database = AppDatabase.getInstance(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -117,12 +123,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
     @Override
     public void onItemClick(MovieEntity movie) {
         Intent intent = new Intent(this, DetailsActivity.class);
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_TITLE, movie.getTitle());
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_RATING, movie.getRating());
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_RELEASE_DATE, movie.getReleaseDate());
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_IMAGE_URL, movie.getImageUrl());
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_DESCRIPTION, movie.getDescription());
-        intent.putExtra(DetailsActivity.EXTRA_MOVIE_ID, movie.getMovieId());
+        intent.putExtra(DetailsActivity.EXTRA_MOVIE, movie);
         startActivity(intent);
     }
 
@@ -147,9 +148,15 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
                 setLoadingState(LoadingState.LOADING);
                 break;
             case 2:
-                List<MovieEntity> favourites = new ArrayList<>(); // TODO: fetch actual movies from db
+                final LiveData<List<MovieEntity>> favourites = database.moviesDao().loadAllFavourites();
                 setLoadingState(LoadingState.LOADING);
-                adapter.update(favourites);
+                favourites.observe(this, new Observer<List<MovieEntity>>() {
+                    @Override
+                    public void onChanged(List<MovieEntity> movieEntities) {
+                        favourites.removeObserver(this);
+                        adapter.update(movieEntities);
+                    }
+                });
                 setLoadingState(LoadingState.FINISHED);
         }
     }

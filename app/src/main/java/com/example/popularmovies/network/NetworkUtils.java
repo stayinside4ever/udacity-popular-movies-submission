@@ -3,7 +3,7 @@ package com.example.popularmovies.network;
 import android.util.Log;
 
 import com.example.popularmovies.AppConstants;
-import com.example.popularmovies.database.MovieEntity;
+import com.example.popularmovies.database.models.MovieEntity;
 import com.example.popularmovies.network.callbacks.DetailsNetworkRequestDone;
 import com.example.popularmovies.network.callbacks.MovieNetworkRequestDone;
 import com.example.popularmovies.network.models.MovieResponse;

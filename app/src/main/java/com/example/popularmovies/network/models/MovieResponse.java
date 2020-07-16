@@ -1,7 +1,7 @@
 package com.example.popularmovies.network.models;
 
 import com.example.popularmovies.AppConstants;
-import com.example.popularmovies.database.MovieEntity;
+import com.example.popularmovies.database.models.MovieEntity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package com.example.popularmovies.database;
+package com.example.popularmovies.database.models;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -7,10 +7,11 @@ import androidx.room.PrimaryKey;
 import com.example.popularmovies.network.models.ReviewsResponse;
 import com.example.popularmovies.network.models.TrailersResponse;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity(tableName = "movies")
-public class MovieEntity {
+public class MovieEntity implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int id;
 

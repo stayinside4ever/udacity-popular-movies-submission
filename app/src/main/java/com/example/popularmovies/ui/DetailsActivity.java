@@ -10,9 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.popularmovies.AppExecutors;
 import com.example.popularmovies.R;
 import com.example.popularmovies.adapters.ReviewsListAdapter;
 import com.example.popularmovies.adapters.TrailersListAdapter;
+import com.example.popularmovies.database.AppDatabase;
+import com.example.popularmovies.database.models.MovieEntity;
 import com.example.popularmovies.databinding.ActivityDetailsBinding;
 import com.example.popularmovies.network.NetworkUtils;
 import com.example.popularmovies.network.callbacks.DetailsNetworkRequestDone;
@@ -23,25 +26,25 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity implements TrailersListAdapter.TrailerClickListener {
-    public static final String EXTRA_MOVIE_TITLE = "EXTRA_MOVIE_TITLE";
-    public static final String EXTRA_MOVIE_DESCRIPTION = "EXTRA_MOVIE_DESCRIPTION";
-    public static final String EXTRA_MOVIE_RATING = "EXTRA_MOVIE_RATING";
-    public static final String EXTRA_MOVIE_IMAGE_URL = "EXTRA_MOVIE_IMAGE_URL";
-    public static final String EXTRA_MOVIE_RELEASE_DATE = "EXTRA_MOVIE_RELEASE_DATE";
-    public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
+    public static final String EXTRA_MOVIE = "EXTRA_MOVIE";
 
     private ActivityDetailsBinding binding;
-    NetworkUtils networkUtils;
+    private NetworkUtils networkUtils;
+    private AppDatabase database;
 
     Toast requestFailToast;
 
-    private int movieId;
+    private MovieEntity movie;
+    private List<ReviewsResponse> reviews;
+    private List<TrailersResponse> trailers;
     private boolean reviewsLoaded = false;
     private boolean trailersLoaded = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        database = AppDatabase.getInstance(this);
 
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -51,40 +54,30 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(EXTRA_MOVIE_IMAGE_URL)) {
-            Picasso.get()
-                    .load(intent.getStringExtra(EXTRA_MOVIE_IMAGE_URL))
-                    .placeholder(R.drawable.ic_baseline_image_24)
-                    .error(R.drawable.ic_baseline_broken_image_24)
-                    .into(binding.ivDetailsPoster);
-        }
+        if (intent.hasExtra(EXTRA_MOVIE)) {
+            movie = (MovieEntity) intent.getSerializableExtra(EXTRA_MOVIE);
 
-        if (intent.hasExtra(EXTRA_MOVIE_TITLE)) {
-            binding.tvTitle.setText(intent.getStringExtra(EXTRA_MOVIE_TITLE));
-        }
+            if (movie != null) {
+                Picasso.get()
+                        .load(movie.getImageUrl())
+                        .placeholder(R.drawable.ic_baseline_image_24)
+                        .error(R.drawable.ic_baseline_broken_image_24)
+                        .into(binding.ivDetailsPoster);
 
-        if (intent.hasExtra(EXTRA_MOVIE_RATING)) {
-            binding.tvRating.setText(String.valueOf(intent.getDoubleExtra(EXTRA_MOVIE_RATING, 0.0)));
-        }
-
-        if (intent.hasExtra(EXTRA_MOVIE_DESCRIPTION)) {
-            binding.tvDescription.setText(intent.getStringExtra(EXTRA_MOVIE_DESCRIPTION));
-        }
-
-        if (intent.hasExtra(EXTRA_MOVIE_RELEASE_DATE)) {
-            binding.tvReleaseDate.setText(intent.getStringExtra(EXTRA_MOVIE_RELEASE_DATE));
-        }
-
-        if (intent.hasExtra(EXTRA_MOVIE_ID)) {
-            movieId = intent.getIntExtra(EXTRA_MOVIE_ID, -1);
-        }
+                binding.tvTitle.setText(movie.getTitle());
+                binding.tvRating.setText(String.valueOf(movie.getRating()));
+                binding.tvDescription.setText(movie.getDescription());
+                binding.tvReleaseDate.setText(movie.getReleaseDate());
+            }
+        } // TODO: Placeholder if movie doesnt exist
 
         networkUtils = new NetworkUtils(new DetailsNetworkRequestDone() {
             @Override
             public void onReviewsFetched(List<ReviewsResponse> reviewsResponses) {
                 if (reviewsResponses != null) {
+                    reviews = reviewsResponses;
                     binding.rvReviews.setLayoutManager(new LinearLayoutManager(getParent()));
-                    binding.rvReviews.setAdapter(new ReviewsListAdapter(reviewsResponses));
+                    binding.rvReviews.setAdapter(new ReviewsListAdapter(reviews));
                 } else {
                     binding.llReviewsContainer.setVisibility(View.GONE);
                 }
@@ -96,7 +89,8 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
             @Override
             public void onTrailersFetched(List<TrailersResponse> trailersResponses) {
                 if(trailersResponses != null) {
-                    setupTrailersAdapter(trailersResponses);
+                    trailers = trailersResponses;
+                    setupTrailersAdapter();
                 } else {
                     binding.llTrailersContainer.setVisibility(View.GONE);
                 }
@@ -111,8 +105,15 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
             }
         });
 
-        networkUtils.getReviewsFromNetwork(movieId);
-        networkUtils.getTrailersFromNetwork(movieId);
+        binding.btnFavourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleFavourites();
+            }
+        });
+
+        networkUtils.getReviewsFromNetwork(movie.getMovieId());
+        networkUtils.getTrailersFromNetwork(movie.getMovieId());
     }
 
     private void makeRequestFailedToast() {
@@ -142,8 +143,38 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
     }
 
     // cannot get TrailerClickListener as this from within DetailsNetworkRequestDone
-    private void setupTrailersAdapter(List<TrailersResponse> trailersResponses) {
+    private void setupTrailersAdapter() {
         binding.rvTrailers.setLayoutManager(new LinearLayoutManager(this));
-        binding.rvTrailers.setAdapter(new TrailersListAdapter(trailersResponses, this));
+        binding.rvTrailers.setAdapter(new TrailersListAdapter(trailers, this));
+    }
+
+    private void toggleFavourites() {
+        if (database.moviesDao().loadMovieById(movie.getId()) == null) {
+            MovieEntity dbMovie = new MovieEntity();
+            dbMovie.setTitle(movie.getTitle());
+            dbMovie.setMovieId(movie.getMovieId());
+            dbMovie.setDescription(movie.getDescription());
+            dbMovie.setImageUrl(movie.getImageUrl());
+            dbMovie.setRating(movie.getRating());
+            dbMovie.setReleaseDate(movie.getReleaseDate());
+            dbMovie.setReviews(reviews);
+            dbMovie.setTrailers(trailers);
+
+            final MovieEntity finalDbMovie = dbMovie;
+            AppExecutors.getInstance().diskIo().execute(new Runnable() {
+                @Override
+                public void run() {
+                    database.moviesDao().insertMovie(finalDbMovie);
+                }
+            });
+        } else {
+            AppExecutors.getInstance().diskIo().execute(new Runnable() {
+                @Override
+                public void run() {
+                    database.moviesDao().deleteMovieById(movie.getId());
+                }
+            });
+            // TODO: switch between buttons
+        }
     }
 }

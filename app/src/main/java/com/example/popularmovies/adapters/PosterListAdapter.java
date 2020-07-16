@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.popularmovies.R;
-import com.example.popularmovies.database.MovieEntity;
+import com.example.popularmovies.database.models.MovieEntity;
 import com.example.popularmovies.databinding.ListItemMoviePosterBinding;
 import com.squareup.picasso.Picasso;
 

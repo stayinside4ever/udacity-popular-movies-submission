@@ -2,7 +2,9 @@ package com.example.popularmovies.network.models;
 
 import com.google.gson.annotations.Expose;
 
-public class ReviewsResponse {
+import java.io.Serializable;
+
+public class ReviewsResponse implements Serializable {
     @Expose
     private String author;
 
