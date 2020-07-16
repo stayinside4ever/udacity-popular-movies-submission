@@ -4,6 +4,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.example.popularmovies.network.models.ReviewsResponse;
+import com.example.popularmovies.network.models.TrailersResponse;
+
+import java.util.List;
+
 @Entity(tableName = "movies")
 public class MovieEntity {
     @PrimaryKey(autoGenerate = true)
@@ -26,6 +31,12 @@ public class MovieEntity {
 
     @ColumnInfo(name = "release_date")
     private String releaseDate;
+
+    @ColumnInfo
+    private List<ReviewsResponse> reviews;
+
+    @ColumnInfo
+    private List<TrailersResponse> trailers;
 
     public int getId() {
         return id;
@@ -81,5 +92,21 @@ public class MovieEntity {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public List<ReviewsResponse> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<ReviewsResponse> reviews) {
+        this.reviews = reviews;
+    }
+
+    public List<TrailersResponse> getTrailers() {
+        return trailers;
+    }
+
+    public void setTrailers(List<TrailersResponse> trailers) {
+        this.trailers = trailers;
     }
 }
