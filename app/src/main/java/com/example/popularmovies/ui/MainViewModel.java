@@ -13,6 +13,7 @@ import com.example.popularmovies.network.NetworkUtils;
 import com.example.popularmovies.network.callbacks.MovieNetworkRequestDone;
 import com.example.popularmovies.network.callbacks.MovieRequestFailed;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainViewModel extends ViewModel {
@@ -21,7 +22,7 @@ public class MainViewModel extends ViewModel {
     private AppDatabase database;
     private NetworkUtils networkUtils;
 
-    public MainViewModel(Application application, final MovieRequestFailed callback) {
+    public MainViewModel(Application application, final MovieRequestFailed reqFailCallback) {
         database = AppDatabase.getInstance(application);
         networkUtils = new NetworkUtils(new MovieNetworkRequestDone() {
             @Override
@@ -31,7 +32,7 @@ public class MainViewModel extends ViewModel {
 
             @Override
             public void onRequestFailed() {
-                callback.moviesRequestFailed();
+                reqFailCallback.moviesRequestFailed();
             }
         });
     }
@@ -55,7 +56,15 @@ public class MainViewModel extends ViewModel {
                     @Override
                     public void onChanged(List<MovieEntity> movieEntities) {
                         database.moviesDao().loadAllFavourites().removeObserver(this);
-                        movieList.setValue(movieEntities);
+                        if (movieEntities == null || movieEntities.isEmpty()) {
+                            List<MovieEntity> noMovies = new ArrayList<>();
+                            MovieEntity emptyMovie = new MovieEntity();
+                            emptyMovie.setId(-1);
+                            noMovies.add(emptyMovie);
+                            movieList.setValue(noMovies);
+                        } else {
+                            movieList.setValue(movieEntities);
+                        }
                     }
                 });
         }

@@ -26,7 +26,9 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-enum LoadingState {LOADING, FINISHED}
+import static android.view.View.GONE;
+
+enum LoadingState {LOADING, FINISHED, EMPTY}
 
 public class MainActivity extends AppCompatActivity implements PosterListAdapter.ItemClickListener {
     private PosterListAdapter adapter;
@@ -60,9 +62,14 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         viewModel.getMovies().observe(this, new Observer<List<MovieEntity>>() {
             @Override
             public void onChanged(List<MovieEntity> movieEntities) {
-                if (movieEntities != null) {
-                    adapter.update(movieEntities);
-                    setLoadingState(LoadingState.FINISHED);
+                if (movieEntities != null && !movieEntities.isEmpty()) {
+                    if (movieEntities.get(0).getId() != -1) {
+                        adapter.update(movieEntities);
+                        setLoadingState(LoadingState.FINISHED);
+                    } else {
+                        setLoadingState(LoadingState.EMPTY);
+                    }
+
                 } else {
                     setLoadingState(LoadingState.LOADING);
                 }
@@ -94,13 +101,19 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
     private void setLoadingState(LoadingState state) {
         switch (state) {
             case LOADING:
-                binding.rvPostersList.setVisibility(View.GONE);
+                binding.rvPostersList.setVisibility(GONE);
                 binding.pbPostersList.setVisibility(View.VISIBLE);
+                binding.tvNoFaves.setVisibility(GONE);
                 break;
             case FINISHED:
-                binding.pbPostersList.setVisibility(View.GONE);
+                binding.pbPostersList.setVisibility(GONE);
                 binding.rvPostersList.setVisibility(View.VISIBLE);
+                binding.tvNoFaves.setVisibility(GONE);
                 break;
+            case EMPTY:
+                binding.pbPostersList.setVisibility(GONE);
+                binding.rvPostersList.setVisibility(GONE);
+                binding.tvNoFaves.setVisibility(View.VISIBLE);
         }
     }
 

@@ -12,4 +12,5 @@
     <string name="add_to_favourites">Add to Favourites</string>
     <string name="loading_details_failed_message">Loading movies failed. Are you sure you\'re connected to the Internet? Try again by re-entering this view.</string>
     <string name="remove_from_favourites">Remove favourite</string>
+    <string name="no_favourites">No favourites.</string>
 </resources>
