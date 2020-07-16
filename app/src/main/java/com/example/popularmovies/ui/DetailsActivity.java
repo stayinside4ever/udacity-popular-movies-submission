@@ -30,7 +30,7 @@ import static com.example.popularmovies.ui.DetailsActivity.ButtonState.ABLE_UNFA
 import static com.example.popularmovies.ui.DetailsActivity.ButtonState.DETERMINE;
 
 public class DetailsActivity extends AppCompatActivity implements TrailersListAdapter.TrailerClickListener {
-    enum ButtonState { ABLE_FAVOURITE, ABLE_UNFAVOURITE, DETERMINE }
+    enum ButtonState {ABLE_FAVOURITE, ABLE_UNFAVOURITE, DETERMINE}
 
     public static final String EXTRA_MOVIE = "EXTRA_MOVIE";
 
@@ -61,22 +61,20 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(EXTRA_MOVIE)) {
-            movie = (MovieEntity) intent.getSerializableExtra(EXTRA_MOVIE);
+        movie = (MovieEntity) intent.getSerializableExtra(EXTRA_MOVIE);
 
-            if (movie != null) {
-                Picasso.get()
-                        .load(movie.getImageUrl())
-                        .placeholder(R.drawable.ic_baseline_image_24)
-                        .error(R.drawable.ic_baseline_broken_image_24)
-                        .into(binding.ivDetailsPoster);
+        if (movie != null) {
+            Picasso.get()
+                    .load(movie.getImageUrl())
+                    .placeholder(R.drawable.ic_baseline_image_24)
+                    .error(R.drawable.ic_baseline_broken_image_24)
+                    .into(binding.ivDetailsPoster);
 
-                binding.tvTitle.setText(movie.getTitle());
-                binding.tvRating.setText(String.valueOf(movie.getRating()));
-                binding.tvDescription.setText(movie.getDescription());
-                binding.tvReleaseDate.setText(movie.getReleaseDate());
-            }
-        } // TODO: Placeholder if movie doesnt exist
+            binding.tvTitle.setText(movie.getTitle());
+            binding.tvRating.setText(String.valueOf(movie.getRating()));
+            binding.tvDescription.setText(movie.getDescription());
+            binding.tvReleaseDate.setText(movie.getReleaseDate());
+        }
 
         networkUtils = new NetworkUtils(new DetailsNetworkRequestDone() {
             @Override

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,16 +31,17 @@ import java.util.List;
 enum LoadingState {LOADING, FINISHED}
 
 public class MainActivity extends AppCompatActivity implements PosterListAdapter.ItemClickListener {
-    NetworkUtils networkUtils;
-    PosterListAdapter adapter;
-    Toast requestFailToast;
-    ActivityMainBinding binding;
-    AppDatabase database;
+    private NetworkUtils networkUtils;
+    private PosterListAdapter adapter;
+    private Toast requestFailToast;
+    private ActivityMainBinding binding;
+    private AppDatabase database;
+
+    private static final String KEY_CURRENT_TAB = "KEY_CURRENT_TAB";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         database = AppDatabase.getInstance(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -82,12 +82,23 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
             }
         });
 
-        // TODO: save and load selected tab for rotation purposes
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_CURRENT_TAB)) {
+            int pos = savedInstanceState.getInt(KEY_CURRENT_TAB);
+            binding.tabLayoutFilters.getTabAt(pos).select();
+            makeRepositoryRequest(pos); // TODO: for some reason, does not update recyclerview with correct data
+        }
 
 
         networkUtils.getPopularMoviesFromNetwork();
         setLoadingState(LoadingState.LOADING);
     }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_TAB, binding.tabLayoutFilters.getSelectedTabPosition());
+    }
+
 
     private void setLoadingState(LoadingState state) {
         switch (state) {
@@ -150,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
                 break;
             case 2:
                 final LiveData<List<MovieEntity>> favourites = database.moviesDao().loadAllFavourites();
-                Log.e("AAAAAAAAAAAAA", String.valueOf(favourites.getValue()));
                 setLoadingState(LoadingState.LOADING);
                 favourites.observe(this, new Observer<List<MovieEntity>>() {
                     @Override
