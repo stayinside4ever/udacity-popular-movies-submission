@@ -1,6 +1,7 @@
 package com.example.popularmovies.adapters;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -13,9 +14,15 @@ import java.util.List;
 
 public class TrailersListAdapter extends RecyclerView.Adapter<TrailersListAdapter.TrailersViewHolder> {
     private List<TrailersResponse> data;
+    private TrailerClickListener trailerClickListener;
 
-    public TrailersListAdapter(List<TrailersResponse> data) {
+    public TrailersListAdapter(List<TrailersResponse> data, TrailerClickListener trailerClickListener) {
         this.data = data;
+        this.trailerClickListener = trailerClickListener;
+    }
+
+    public interface TrailerClickListener {
+        void onClick(TrailersResponse trailer);
     }
 
     @NonNull
@@ -30,7 +37,7 @@ public class TrailersListAdapter extends RecyclerView.Adapter<TrailersListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull TrailersViewHolder holder, int position) {
-        holder.bind(data.get(position));
+        holder.bind(position);
     }
 
     @Override
@@ -43,18 +50,22 @@ public class TrailersListAdapter extends RecyclerView.Adapter<TrailersListAdapte
         notifyDataSetChanged();
     }
 
-    class TrailersViewHolder extends RecyclerView.ViewHolder {
+    class TrailersViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final ListItemTrailerBinding trailerBinding;
-        private TrailersResponse trailer;
 
         public TrailersViewHolder(ListItemTrailerBinding trailerBinding) {
             super(trailerBinding.getRoot());
             this.trailerBinding = trailerBinding;
+            trailerBinding.getRoot().setOnClickListener(this);
         }
 
-        void bind(TrailersResponse trailer) {
-            this.trailer = trailer;
-            trailerBinding.tvTrailer.setText(trailer.getName());
+        void bind(int pos) {
+            trailerBinding.tvTrailer.setText(data.get(pos).getName());
+        }
+
+        @Override
+        public void onClick(View v) {
+            trailerClickListener.onClick(data.get(getAdapterPosition()));
         }
     }
 }

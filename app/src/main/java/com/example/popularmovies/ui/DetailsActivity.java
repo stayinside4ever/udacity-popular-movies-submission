@@ -1,6 +1,7 @@
 package com.example.popularmovies.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -13,15 +14,15 @@ import com.example.popularmovies.R;
 import com.example.popularmovies.adapters.ReviewsListAdapter;
 import com.example.popularmovies.adapters.TrailersListAdapter;
 import com.example.popularmovies.databinding.ActivityDetailsBinding;
-import com.example.popularmovies.network.callbacks.DetailsNetworkRequestDone;
 import com.example.popularmovies.network.NetworkUtils;
+import com.example.popularmovies.network.callbacks.DetailsNetworkRequestDone;
 import com.example.popularmovies.network.models.ReviewsResponse;
 import com.example.popularmovies.network.models.TrailersResponse;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements TrailersListAdapter.TrailerClickListener {
     public static final String EXTRA_MOVIE_TITLE = "EXTRA_MOVIE_TITLE";
     public static final String EXTRA_MOVIE_DESCRIPTION = "EXTRA_MOVIE_DESCRIPTION";
     public static final String EXTRA_MOVIE_RATING = "EXTRA_MOVIE_RATING";
@@ -95,8 +96,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onTrailersFetched(List<TrailersResponse> trailersResponses) {
                 if(trailersResponses != null) {
-                    binding.rvTrailers.setLayoutManager(new LinearLayoutManager(getParent()));
-                    binding.rvTrailers.setAdapter(new TrailersListAdapter(trailersResponses));
+                    setupTrailersAdapter(trailersResponses);
                 } else {
                     binding.llTrailersContainer.setVisibility(View.GONE);
                 }
@@ -130,5 +130,20 @@ public class DetailsActivity extends AppCompatActivity {
             binding.pbDetailsLoading.setVisibility(View.GONE);
             binding.detailsContainer.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onClick(TrailersResponse trailer) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=" + trailer.getKey()));
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    // cannot get TrailerClickListener as this from within DetailsNetworkRequestDone
+    private void setupTrailersAdapter(List<TrailersResponse> trailersResponses) {
+        binding.rvTrailers.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvTrailers.setAdapter(new TrailersListAdapter(trailersResponses, this));
     }
 }
