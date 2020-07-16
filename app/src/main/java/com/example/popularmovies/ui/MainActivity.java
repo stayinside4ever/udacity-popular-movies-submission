@@ -12,8 +12,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.popularmovies.R;
@@ -22,7 +22,7 @@ import com.example.popularmovies.database.AppDatabase;
 import com.example.popularmovies.database.models.MovieEntity;
 import com.example.popularmovies.databinding.ActivityMainBinding;
 import com.example.popularmovies.network.NetworkUtils;
-import com.example.popularmovies.network.callbacks.MovieNetworkRequestDone;
+import com.example.popularmovies.network.callbacks.MovieRequestFailed;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
     private Toast requestFailToast;
     private ActivityMainBinding binding;
     private AppDatabase database;
+    private MainViewModel viewModel;
 
     private static final String KEY_CURRENT_TAB = "KEY_CURRENT_TAB";
 
@@ -53,23 +54,32 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         adapter = new PosterListAdapter(new ArrayList<MovieEntity>(), this);
         binding.rvPostersList.setAdapter(adapter);
 
-        networkUtils = new NetworkUtils(new MovieNetworkRequestDone() {
-            @Override
-            public void onMoviesFetched(List<MovieEntity> movies) {
-                adapter.update(movies);
-                setLoadingState(LoadingState.FINISHED);
-            }
+        MainViewModelFactory factory = new MainViewModelFactory(getApplication(), new MovieRequestFailed() {
 
             @Override
-            public void onRequestFailed() {
+            public void moviesRequestFailed() {
                 showRequestFailToast();
+            }
+        });
+
+        viewModel = new ViewModelProvider(this, factory).get(MainViewModel.class);
+
+        viewModel.getMovies().observe(this, new Observer<List<MovieEntity>>() {
+            @Override
+            public void onChanged(List<MovieEntity> movieEntities) {
+                if (movieEntities != null) {
+                    adapter.update(movieEntities);
+                    setLoadingState(LoadingState.FINISHED);
+                } else {
+                    setLoadingState(LoadingState.LOADING);
+                }
             }
         });
 
         binding.tabLayoutFilters.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                makeRepositoryRequest(tab.getPosition());
+                viewModel.makeRepositoryRequest(tab.getPosition());
             }
 
             @Override
@@ -78,25 +88,13 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                makeRepositoryRequest(tab.getPosition());
+                viewModel.makeRepositoryRequest(tab.getPosition());
             }
         });
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_CURRENT_TAB)) {
-            int pos = savedInstanceState.getInt(KEY_CURRENT_TAB);
-            binding.tabLayoutFilters.getTabAt(pos).select();
-            makeRepositoryRequest(pos); // TODO: for some reason, does not update recyclerview with correct data
-        }
+        binding.tabLayoutFilters.getTabAt(viewModel.getCurrentPos()).select();
 
-
-        networkUtils.getPopularMoviesFromNetwork();
-        setLoadingState(LoadingState.LOADING);
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(KEY_CURRENT_TAB, binding.tabLayoutFilters.getSelectedTabPosition());
+        viewModel.makeRepositoryRequest(binding.tabLayoutFilters.getSelectedTabPosition());
     }
 
 
@@ -147,30 +145,6 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
         requestFailToast = Toast.makeText(this, R.string.loading_movies_failed_message,
                 Toast.LENGTH_LONG);
         requestFailToast.show();
-    }
-
-    private void makeRepositoryRequest(int tabPosition) {
-        switch (tabPosition) {
-            case 0:
-                networkUtils.getPopularMoviesFromNetwork();
-                setLoadingState(LoadingState.LOADING);
-                break;
-            case 1:
-                networkUtils.getTopRatedMoviesFromNetwork();
-                setLoadingState(LoadingState.LOADING);
-                break;
-            case 2:
-                final LiveData<List<MovieEntity>> favourites = database.moviesDao().loadAllFavourites();
-                setLoadingState(LoadingState.LOADING);
-                favourites.observe(this, new Observer<List<MovieEntity>>() {
-                    @Override
-                    public void onChanged(List<MovieEntity> movieEntities) {
-                        favourites.removeObserver(this);
-                        adapter.update(movieEntities);
-                    }
-                });
-                setLoadingState(LoadingState.FINISHED);
-        }
     }
 
     // Helper method to calculate the best amount of columns to be displayed on a device
