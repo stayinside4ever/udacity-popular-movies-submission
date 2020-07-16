@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements PosterListAdapter
                 break;
             case 2:
                 final LiveData<List<MovieEntity>> favourites = database.moviesDao().loadAllFavourites();
+                Log.e("AAAAAAAAAAAAA", String.valueOf(favourites.getValue()));
                 setLoadingState(LoadingState.LOADING);
                 favourites.observe(this, new Observer<List<MovieEntity>>() {
                     @Override

@@ -3,6 +3,7 @@ package com.example.popularmovies.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -88,7 +89,7 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
 
             @Override
             public void onTrailersFetched(List<TrailersResponse> trailersResponses) {
-                if(trailersResponses != null) {
+                if (trailersResponses != null) {
                     trailers = trailersResponses;
                     setupTrailersAdapter();
                 } else {
@@ -149,32 +150,32 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
     }
 
     private void toggleFavourites() {
-        if (database.moviesDao().loadMovieById(movie.getId()) == null) {
-            MovieEntity dbMovie = new MovieEntity();
-            dbMovie.setTitle(movie.getTitle());
-            dbMovie.setMovieId(movie.getMovieId());
-            dbMovie.setDescription(movie.getDescription());
-            dbMovie.setImageUrl(movie.getImageUrl());
-            dbMovie.setRating(movie.getRating());
-            dbMovie.setReleaseDate(movie.getReleaseDate());
-            dbMovie.setReviews(reviews);
-            dbMovie.setTrailers(trailers);
 
-            final MovieEntity finalDbMovie = dbMovie;
-            AppExecutors.getInstance().diskIo().execute(new Runnable() {
-                @Override
-                public void run() {
-                    database.moviesDao().insertMovie(finalDbMovie);
+        AppExecutors.getInstance().diskIo().execute(new Runnable() {
+            @Override
+            public void run() {
+                MovieEntity dbMovie = database.moviesDao().loadMovieByMovieId(movie.getMovieId());
+                if (dbMovie == null) {
+                    dbMovie = new MovieEntity();
+                    dbMovie.setTitle(movie.getTitle());
+                    dbMovie.setMovieId(movie.getMovieId());
+                    dbMovie.setDescription(movie.getDescription());
+                    dbMovie.setImageUrl(movie.getImageUrl());
+                    dbMovie.setRating(movie.getRating());
+                    dbMovie.setReleaseDate(movie.getReleaseDate());
+                    dbMovie.setReviews(reviews);
+                    dbMovie.setTrailers(trailers);
+
+                    Log.d(DetailsActivity.class.getSimpleName(), "Inserting new movie into DB");
+                    database.moviesDao().insertMovie(dbMovie);
+                } else {
+                    Log.d(DetailsActivity.class.getSimpleName(), "Deleting from DB");
+                    database.moviesDao().deleteMovieByMovieId(dbMovie.getMovieId());
+
+                    // TODO: switch between buttons
                 }
-            });
-        } else {
-            AppExecutors.getInstance().diskIo().execute(new Runnable() {
-                @Override
-                public void run() {
-                    database.moviesDao().deleteMovieById(movie.getId());
-                }
-            });
-            // TODO: switch between buttons
-        }
+            }
+        });
+
     }
 }

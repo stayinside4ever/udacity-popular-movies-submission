@@ -18,9 +18,9 @@ public interface MoviesDao {
     @Query("SELECT * FROM movies ORDER BY id")
     LiveData<List<MovieEntity>> loadAllFavourites();
 
-    @Query("SELECT * FROM movies WHERE id = :id")
-    LiveData<MovieEntity> loadMovieById(int id);
+    @Query("SELECT * FROM movies WHERE movie_id = :movieId")
+    MovieEntity loadMovieByMovieId(int movieId);
 
-    @Query("DELETE FROM movies WHERE ID = :id")
-    void deleteMovieById(int id);
+    @Query("DELETE FROM movies WHERE movie_id = :movieId")
+    void deleteMovieByMovieId(int movieId);
 }
