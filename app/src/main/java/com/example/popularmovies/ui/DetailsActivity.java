@@ -26,7 +26,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static com.example.popularmovies.ui.DetailsActivity.ButtonState.ABLE_UNFAVOURITE;
+import static com.example.popularmovies.ui.DetailsActivity.ButtonState.DETERMINE;
+
 public class DetailsActivity extends AppCompatActivity implements TrailersListAdapter.TrailerClickListener {
+    enum ButtonState { ABLE_FAVOURITE, ABLE_UNFAVOURITE, DETERMINE }
+
     public static final String EXTRA_MOVIE = "EXTRA_MOVIE";
 
     private ActivityDetailsBinding binding;
@@ -40,6 +45,7 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
     private List<TrailersResponse> trailers;
     private boolean reviewsLoaded = false;
     private boolean trailersLoaded = false;
+    private boolean buttonSet = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -115,6 +121,7 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
 
         networkUtils.getReviewsFromNetwork(movie.getMovieId());
         networkUtils.getTrailersFromNetwork(movie.getMovieId());
+        setButtonState(DETERMINE);
     }
 
     private void makeRequestFailedToast() {
@@ -128,7 +135,7 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
     }
 
     private void checkForDoneLoading() {
-        if (reviewsLoaded && trailersLoaded) {
+        if (reviewsLoaded && trailersLoaded && buttonSet) {
             binding.pbDetailsLoading.setVisibility(View.GONE);
             binding.detailsContainer.setVisibility(View.VISIBLE);
         }
@@ -168,14 +175,60 @@ public class DetailsActivity extends AppCompatActivity implements TrailersListAd
 
                     Log.d(DetailsActivity.class.getSimpleName(), "Inserting new movie into DB");
                     database.moviesDao().insertMovie(dbMovie);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setButtonState(ABLE_UNFAVOURITE);
+                        }
+                    });
                 } else {
                     Log.d(DetailsActivity.class.getSimpleName(), "Deleting from DB");
                     database.moviesDao().deleteMovieByMovieId(dbMovie.getMovieId());
-
-                    // TODO: switch between buttons
+                    runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    setButtonState(DETERMINE); // TODO: for some reason, ABLE_FAVOURITE does not update the UI???
+                                }
+                            }
+                    );
                 }
             }
         });
 
+    }
+
+    private void setButtonState(ButtonState state) {
+        switch (state) {
+            case ABLE_FAVOURITE:
+                binding.btnFavourite.setText(R.string.add_to_favourites);
+            case ABLE_UNFAVOURITE:
+                binding.btnFavourite.setText(R.string.remove_from_favourites);
+                break;
+            default:
+                AppExecutors.getInstance().diskIo().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        MovieEntity dbMovie = database.moviesDao().loadMovieByMovieId(movie.getMovieId());
+                        if (dbMovie == null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    binding.btnFavourite.setText(R.string.add_to_favourites);
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    binding.btnFavourite.setText(R.string.remove_from_favourites);
+                                }
+                            });
+                        }
+                    }
+                });
+        }
+
+        buttonSet = true;
     }
 }
