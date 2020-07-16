@@ -18,10 +18,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.popularmovies.R;
 import com.example.popularmovies.adapters.PosterListAdapter;
-import com.example.popularmovies.database.AppDatabase;
 import com.example.popularmovies.database.models.MovieEntity;
 import com.example.popularmovies.databinding.ActivityMainBinding;
-import com.example.popularmovies.network.NetworkUtils;
 import com.example.popularmovies.network.callbacks.MovieRequestFailed;
 import com.google.android.material.tabs.TabLayout;
 
@@ -31,19 +29,14 @@ import java.util.List;
 enum LoadingState {LOADING, FINISHED}
 
 public class MainActivity extends AppCompatActivity implements PosterListAdapter.ItemClickListener {
-    private NetworkUtils networkUtils;
     private PosterListAdapter adapter;
     private Toast requestFailToast;
     private ActivityMainBinding binding;
-    private AppDatabase database;
     private MainViewModel viewModel;
-
-    private static final String KEY_CURRENT_TAB = "KEY_CURRENT_TAB";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = AppDatabase.getInstance(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
